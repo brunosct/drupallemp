@@ -1,0 +1,35 @@
+services:
+  web:
+    image: nginx:latest
+    ports:
+      - 80:80
+      - 443:443
+    env_file:
+      - .env
+    volumes:
+      - ./app:/app
+      - ./nginx/meuvhost.conf:/etc/nginx/templates/meuvhost.conf.template
+      - ./nginx/certificados:/certificados
+  meuphp:
+    build: php
+    env_file:
+      - .env    
+    volumes:
+      - ./app:/app    
+      - ./php/php.ini:/etc/php/8.2/fpm/php.ini
+      - ./php/www.conf:/etc/php/8.2/fpm/pool.d/www.conf
+  basedatos:
+    image: mariadb
+    # ports:
+    #   - 3306:3306
+    environment:
+      MARIADB_ROOT_PASSWORD: abc123.
+      MYSQL_DATABASE: db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: user
+    volumes:
+      - datos:/var/lib/mysql 
+      - ./bd/backup.sql:/docker-entrypoint-initdb.d/backup.sql
+      - ./bd:/bd
+volumes:
+  datos: 
